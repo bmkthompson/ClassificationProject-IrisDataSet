@@ -1,0 +1,54 @@
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+import pandas as pd
+%matplotlib inline
+
+from sklearn.preprocessing import LabelEncoder
+from sklearn.preprocessing import StandardScaler
+from keras.models import Sequential
+from keras.layers import Dense
+import tensorflow as tf
+
+columns= ['Sepal Length', 'Sepal Width', 'Petal Length', 'Petal Width', 'Class_Labels']
+df= pd.read_csv('iris.data', names= columns)
+
+### run this cell to plot the data ###
+sns.pairplot(df, hue= 'Class_Labels')
+
+### Preparing the data ###
+
+x = df.iloc[:, :-1].values 
+y = df.iloc[:, -1].values
+
+encoder= LabelEncoder()
+y_encoded= encoder.fit_transform(y)
+
+y_onehot=  tf.keras.utils.to_categorical(y_encoded)
+
+x_train, x_test, y_train, y_test= train_test_split(x, y_onehot, test_size= 0.2)
+
+scaler= StandardScaler()
+x_train_normalized= scaler.fit_transform(x_train)
+x_test_normalized= scaler.transform(x_test)
+
+### Building NN Model ###
+
+model= Sequential()
+
+# Input layer w 8 neurons in hidden layer, 4 features using ReLu
+model.add(Dense(20, input_dim= 4, activation= 'relu'))
+
+# Output Layer w 3 neurons as per # of output labels
+model.add(Dense(3, activation= 'softmax'))
+
+# Compile
+model.compile(loss= 'categorical_crossentropy', optimizer= 'adam', metrics= ['accuracy'])
+
+# Training 
+history= model.fit(x_train, y_train_categorical, validation_data= (x_test, y_test_categorical), epochs= 100, batch_size= 50)
+
+# Evaluating the model
+loss, test_accuracy = model.evaluate(x_test_normalized, y_test)
+print(f'Test Accuracy: {test_accuracy * 100:.2f}%')
+
