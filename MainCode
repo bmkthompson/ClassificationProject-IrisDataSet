@@ -1,0 +1,63 @@
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+import pandas as pd
+%matplotlib inline
+
+### DATA & VISUALIZATION ###
+
+columns= ['Sepal Length', 'Sepal Width', 'Petal Length', 'Petal Width', 'Class_Labels']
+
+df= pd.read_csv('iris.data', names=columns)
+df.head(150)
+
+df.describe()
+
+sns.pairplot(df, hue='Class_Labels')
+
+data= df.values
+
+x= data[:,:4]
+y= data[:,4]
+
+from sklearn.model_selection import train_test_split
+x_train, x_test, y_train, y_test= train_test_split(x, y, test_size=0.2)
+
+
+
+### SUPPORT VECOTR MACHINE ###
+
+from sklearn.svm import SVC
+model_svc= SVC()
+model_svc.fit(x_train, y_train)
+
+
+algo1= model_svc.predict(x_test)
+
+from sklearn.metrics import accuracy_score
+print('The accuracy of the SVC algorithm is ',(accuracy_score(y_test, algo1)*100),'%')
+
+
+
+### LOGISTIC REGRESSION ###
+
+from sklearn.linear_model import LogisticRegression
+model_lr= LogisticRegression()
+model_lr.fit(x_train,y_train)
+
+algo2= model_lr.predict(x_test)
+
+from sklearn.metrics import accuracy_score
+print('The accuracy of the Logistic Regression algorithm is ',(accuracy_score(y_test, algo2)*100),'%')
+
+
+
+### DECISION TREE CLASSIFIER ###
+
+from sklearn.tree import DecisionTreeClassifier
+model_dtc=DecisionTreeClassifier()
+model_dtc.fit(x_train,y_train)
+
+algo3= model_svc.predict(x_test)
+from sklearn.metrics import accuracy_score
+print('The accuracy of the Decision Tree Classifier algorithm is ',(accuracy_score(y_test, algo3)*100),'%')
